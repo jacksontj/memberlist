@@ -516,6 +516,21 @@ func (m *Memberlist) SendToUDP(to *Node, msg []byte) error {
 	return m.rawSendMsgUDP(destAddr, buf)
 }
 
+// SendToUDP is used to directly send a message to another node, without
+// the use of the gossip mechanism. This will encode the message as a
+// user-data message, which a delegate will receive through NotifyMsg
+// The actual data is transmitted over UDP, which means this is a
+// best-effort transmission mechanism, and the maximum size of the
+// message is the size of a single UDP datagram, after compression
+func (m *Memberlist) SendToUDPPort(to *net.UDPAddr, msg []byte) error {
+	// Encode as a user message
+	buf := make([]byte, 1, len(msg)+1)
+	buf[0] = byte(userMsg)
+	buf = append(buf, msg...)
+
+	return m.rawSendMsgUDPAddr(to, buf)
+}
+
 // SendToTCP is used to directly send a message to another node, without
 // the use of the gossip mechanism. This will encode the message as a
 // user-data message, which a delegate will receive through NotifyMsg

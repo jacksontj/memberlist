@@ -618,6 +618,11 @@ func (m *Memberlist) sendMsg(to net.Addr, msg []byte) error {
 
 // rawSendMsgUDP is used to send a UDP message to another host without modification
 func (m *Memberlist) rawSendMsgUDP(to net.Addr, msg []byte) error {
+	a, _ := to.(*net.UDPAddr)
+	return m.rawSendMsgUDPAddr(a, msg)
+}
+
+func (m *Memberlist) rawSendMsgUDPAddr(to *net.UDPAddr, msg []byte) error {
 	// Check if we have compression enabled
 	if m.config.EnableCompression {
 		buf, err := compressPayload(msg)
@@ -645,7 +650,7 @@ func (m *Memberlist) rawSendMsgUDP(to net.Addr, msg []byte) error {
 	}
 
 	metrics.IncrCounter([]string{"memberlist", "udp", "sent"}, float32(len(msg)))
-	_, err := m.udpListener.WriteTo(msg, to)
+	_, err := m.udpListener.WriteToUDP(msg, to)
 	return err
 }
 
