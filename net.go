@@ -433,7 +433,8 @@ func (m *Memberlist) handleCompound(buf []byte, from net.Addr, timestamp time.Ti
 func (m *Memberlist) handlePing(buf []byte, from net.Addr) {
 	var p ping
 	if err := decode(buf, &p); err != nil {
-		m.logger.Printf("[ERR] memberlist: Failed to decode ping request: %s %s", err, LogAddress(from))
+		// TODO: traceroutes from dnms hit this code path
+		//m.logger.Printf("[ERR] memberlist: Failed to decode ping request: %s %s", err, LogAddress(from))
 		return
 	}
 	// If node is provided, verify that it is for us
